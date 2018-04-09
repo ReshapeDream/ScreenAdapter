@@ -50,11 +50,15 @@
 </RelativeLayout>
 ```
 - 未适配
+
 ![未适配480x800](https://github.com/ReshapeDream/ScreenAdapter/blob/master/%E6%9C%AA%E9%80%82%E9%85%8D480x800.png)
 - 适配各种屏幕
+
 ![适配各种屏幕](https://github.com/ReshapeDream/ScreenAdapter/blob/master/%E9%80%82%E9%85%8D%E5%90%84%E7%A7%8D%E5%B1%8F%E5%B9%95.jpg)
 ### 关于是否适配横竖切换 adapteScreenSwitch
 - if false 
+
 ![false](https://github.com/ReshapeDream/ScreenAdapter/blob/master/%E6%A8%AA%E5%B1%8Ffalse.png)
 - if true
+
 ![true](https://github.com/ReshapeDream/ScreenAdapter/blob/master/%E6%A8%AA%E5%B1%8Ftrue.png)
