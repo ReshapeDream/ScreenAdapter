@@ -1,7 +1,7 @@
 # ScreenAdapter
 一行代码适配所有Android屏幕
 ### 使用
-- 1. [引入包](https://jitpack.io/#ReshapeDream/ScreenAdapter)
+- 1.[引入包](https://jitpack.io/#ReshapeDream/ScreenAdapter)
 - 2.代码调用
 ```
  setContentView(ScreenAdapter.inflater(this,R.layout.activity_main,false));
