@@ -3,6 +3,7 @@ package com.neil.library.screenadapter;
 import android.content.Context;
 import android.content.res.Resources;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
@@ -70,8 +71,8 @@ public class ScreenAdapter {
         width = adapteScreenSwitch ? Math.min(displayMetrics.heightPixels, displayMetrics.widthPixels) : displayMetrics.widthPixels;
         height = adapteScreenSwitch ? Math.max(displayMetrics.heightPixels, displayMetrics.widthPixels) : displayMetrics.heightPixels;
         if(aimW!=0&&aimH!=0){
-            sScaleX=(float)aimW/width;
-            sScaleY=(float)aimH/height;
+            sScaleX=(float)width/aimW;
+            sScaleY=(float)height/aimH;
         }else{
             ArrayList<CustomAttr> tag = (ArrayList<CustomAttr>) rootView.getTag(inflater.getTagId());
             if (tag.isEmpty()) {
