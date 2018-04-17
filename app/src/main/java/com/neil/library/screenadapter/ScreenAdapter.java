@@ -15,6 +15,15 @@ import com.neil.customattrhelper.CustomAttrsLayoutInflater;
 import java.util.ArrayList;
 
 public class ScreenAdapter {
+    private static int aimW=0;
+    private static int aimH=0;
+    private static float sScaleX=0.0f;
+    private static float sScaleY=0.0f;
+
+    public static void setAimScreenWH(int w, int h) {
+        aimW = w;
+        aimH = h;
+    }
 
     public static View inflater(Context context, int layoutId) {
         return inflater(context, layoutId, false);
@@ -35,45 +44,59 @@ public class ScreenAdapter {
                 new CustomAttr(R.attr.aimScreenWidth, 0)};
         inflater.setCustomAttrs(customAttrs);
         final View rootView = inflater.inflate(layoutId, null);
-        rootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                reSizeView(rootView, inflater, adapteScreenSwitch);
-                rootView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-            }
-        });
+        calculateScale(rootView,inflater,adapteScreenSwitch);
+        if(sScaleX>0f&&sScaleY>0f){
+            rootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    reSizeView(rootView);
+                    //完成后移除监听
+                    rootView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                }
+            });
+        }
         return rootView;
+    }
+
+    /**
+     * 计算缩放比例
+     * @param rootView
+     * @param inflater
+     * @param adapteScreenSwitch
+     */
+    private static void calculateScale(View rootView,CustomAttrsLayoutInflater inflater,boolean adapteScreenSwitch){
+        DisplayMetrics displayMetrics = Resources.getSystem().getDisplayMetrics();
+        int width, height;
+        width = adapteScreenSwitch ? Math.min(displayMetrics.heightPixels, displayMetrics.widthPixels) : displayMetrics.widthPixels;
+        height = adapteScreenSwitch ? Math.max(displayMetrics.heightPixels, displayMetrics.widthPixels) : displayMetrics.heightPixels;
+        if(aimW!=0&&aimH!=0){
+            sScaleX=(float)aimW/width;
+            sScaleY=(float)aimH/height;
+        }else{
+            ArrayList<CustomAttr> tag = (ArrayList<CustomAttr>) rootView.getTag(inflater.getTagId());
+            if (tag.isEmpty()) {
+                return;
+            }
+            for (CustomAttr attr : tag) {
+                if (attr.attrId == R.attr.aimScreenHeight) {
+                    sScaleY = height / attr.getFloatValue();
+                } else if (attr.attrId == R.attr.aimScreenWidth) {
+                    sScaleX = width / attr.getFloatValue();
+                }
+            }
+        }
     }
 
     /**
      * 获取自定义属性，重新计算View的大小
      *
      * @param rootView
-     * @param inflater
-     * @param adapteScreenSwitch 是否适配横竖屏切换
      */
-    private static void reSizeView(View rootView, CustomAttrsLayoutInflater inflater, boolean adapteScreenSwitch) {
-        ArrayList<CustomAttr> tag = (ArrayList<CustomAttr>) rootView.getTag(inflater.getTagId());
-        if (tag.isEmpty()) {
-            return;
-        }
-        float scaleX = 0f;//宽度的缩放
-        float scaleY = 0f;//高度的缩放
-        DisplayMetrics displayMetrics = Resources.getSystem().getDisplayMetrics();
-        int width, height;
-        width = adapteScreenSwitch ? Math.min(displayMetrics.heightPixels, displayMetrics.widthPixels) : displayMetrics.widthPixels;
-        height = adapteScreenSwitch ? Math.max(displayMetrics.heightPixels, displayMetrics.widthPixels) : displayMetrics.heightPixels;
-        for (CustomAttr attr : tag) {
-            if (attr.attrId == R.attr.aimScreenHeight) {
-                scaleY = height / attr.getFloatValue();
-            } else if (attr.attrId == R.attr.aimScreenWidth) {
-                scaleX = width / attr.getFloatValue();
-            }
-        }
+    private static void reSizeView(View rootView) {
         if (rootView instanceof ViewGroup) {
-            calculateViewGroup((ViewGroup) rootView, scaleX, scaleY);
+            calculateViewGroup((ViewGroup) rootView, sScaleX, sScaleY);
         } else {
-            calculateChild(rootView, scaleX, scaleY);
+            calculateChild(rootView, sScaleX, sScaleY);
         }
     }
 
@@ -124,7 +147,7 @@ public class ScreenAdapter {
         //字体大小设置
         if (child instanceof TextView) {
             float srcSize = ((TextView) child).getTextSize();
-            ((TextView) child).setTextSize(TypedValue.COMPLEX_UNIT_PX, srcSize * Math.min(scaleX,scaleY));
+            ((TextView) child).setTextSize(TypedValue.COMPLEX_UNIT_PX, srcSize * Math.min(scaleX, scaleY));
         }
     }
 }
